@@ -120,6 +120,7 @@ class _ChatScreenState extends State<ChatScreen> {
   String _lastWords = '';
   final List<Map<String, String>> _messages = [];
   String _svgContent = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"></svg>';
+  String _currentLevel = 'Beginner';
 
   @override
   void initState() {
@@ -152,13 +153,23 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  void _simplify() {
+    _sendMessage("[SIMPLIFY]");
+  }
+
   void _sendMessage(String text) async {
-    setState(() {
-      _messages.add({'sender': 'You', 'text': text});
-    });
+    if (text == "[SIMPLIFY]") {
+      setState(() {
+        _messages.add({'sender': 'You', 'text': '¿Qué?'});
+      });
+    } else {
+      setState(() {
+        _messages.add({'sender': 'You', 'text': text});
+      });
+    }
 
     try {
-      final response = await _apiService.sendChat(text, 'Beginner');
+      final response = await _apiService.sendChat(text, _currentLevel);
       setState(() {
         _messages.add({'sender': 'AI (Spanish)', 'text': response['text']});
         _svgContent = _wrapInSvg(response['svg_draw']);
@@ -181,6 +192,22 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: AppBar(
         title: const Text('Crosstalk Spanish'),
         actions: [
+          DropdownButton<String>(
+            value: _currentLevel,
+            dropdownColor: const Color(0xFF1F2937),
+            onChanged: (String? newValue) {
+              setState(() {
+                _currentLevel = newValue!;
+              });
+            },
+            items: <String>['Superbeginner', 'Beginner', 'Intermediate']
+                .map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value, style: const TextStyle(fontSize: 14)),
+              );
+            }).toList(),
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () => FirebaseAuth.instance.signOut(),
@@ -193,13 +220,13 @@ class _ChatScreenState extends State<ChatScreen> {
         children: [
           if (user != null)
             Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text('Hola, ${user.displayName}!', style: const TextStyle(color: Colors.gray)),
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Text('Hola, ${user.displayName}!', style: const TextStyle(color: Colors.grey)),
             ),
           Expanded(
             flex: 2,
             child: Container(
-              margin: const EdgeInsets.all(16),
+              margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -236,16 +263,31 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: ElevatedButton.icon(
-              onPressed: _listen,
-              icon: Icon(_isListening ? Icons.stop : Icons.mic),
-              label: Text(_isListening ? 'Listening...' : 'Hold to Speak English'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueAccent,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-              ),
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: _listen,
+                  icon: Icon(_isListening ? Icons.stop : Icons.mic),
+                  label: Text(_isListening ? 'Listening...' : 'Speak English'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueAccent,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                ElevatedButton(
+                  onPressed: _simplify,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orangeAccent,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                  ),
+                  child: const Text('¿Qué?', style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              ],
             ),
           ),
         ],
