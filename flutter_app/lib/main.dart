@@ -157,6 +157,12 @@ class _ChatScreenState extends State<ChatScreen> {
     _sendMessage("[SIMPLIFY]");
   }
 
+  void _clearCanvas() {
+    setState(() {
+      _svgContent = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"></svg>';
+    });
+  }
+
   void _sendMessage(String text) async {
     if (text == "[SIMPLIFY]") {
       setState(() {
@@ -192,6 +198,11 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: AppBar(
         title: const Text('Crosstalk Spanish'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.delete_outline),
+            onPressed: _clearCanvas,
+            tooltip: 'Clear Canvas',
+          ),
           DropdownButton<String>(
             value: _currentLevel,
             dropdownColor: const Color(0xFF1F2937),
@@ -231,6 +242,14 @@ class _ChatScreenState extends State<ChatScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade300, width: 2),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: SvgPicture.string(
                 _svgContent,
