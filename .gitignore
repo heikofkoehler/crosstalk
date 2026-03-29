@@ -1,0 +1,33 @@
+# Node.js
+node_modules/
+npm-debug.log
+.env
+functions/node_modules/
+
+# Flutter
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+ios/.generated/
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+ios/ServiceDefinitions.json
+lib/generated_plugin_registrant.dart
+pubspec.lock
+
+# Go
+backend/server
+backend/go.sum # optional, but sometimes good to keep. Actually usually kept.
+bin/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
