@@ -8,8 +8,7 @@ import (
 	"net/http"
 	"os"
 
-	"cloud.google.com/go/vertexai/genai"
-	"google.golang.org/api/option"
+	"google.golang.org/genai"
 )
 
 const SystemPrompt = `
@@ -50,7 +49,7 @@ func main() {
 			http.NotFound(w, r)
 			return
 		}
-		fmt.Fprint(w, "Crosstalk AI Backend is running!")
+		fmt.Fprint(w, "Crosstalk AI Backend is running (New Gen AI SDK)!")
 	})
 
 	http.HandleFunc("/api/chat", func(w http.ResponseWriter, r *http.Request) {
@@ -74,12 +73,20 @@ func main() {
 		var client *genai.Client
 		var err error
 
+		// Configuration for the new SDK
+		config := &genai.ClientConfig{
+			Project:  projectID,
+			Location: location,
+		}
+
 		if apiKey != "" {
 			log.Println("Using API Key for authentication")
-			client, err = genai.NewClient(ctx, projectID, location, option.WithAPIKey(apiKey))
+			config.APIKey = apiKey
+			client, err = genai.NewClient(ctx, config)
 		} else {
-			log.Println("Using Default Application Credentials (IAM)")
-			client, err = genai.NewClient(ctx, projectID, location)
+			log.Println("Using Vertex AI (IAM) for authentication")
+			config.Backend = genai.BackendVertexAI
+			client, err = genai.NewClient(ctx, config)
 		}
 
 		if err != nil {
@@ -87,19 +94,20 @@ func main() {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
-		defer client.Close()
 
-		// Using the latest Flash Lite Preview as requested
-		model := client.GenerativeModel("gemini-2.0-flash-lite-preview-02-05")
-		model.SystemInstruction = &genai.Content{
-			Role: "user",
-			Parts: []genai.Part{
-				genai.Text(SystemPrompt),
+		model := "gemini-2.0-flash-lite-preview-02-05"
+		
+		// Setup generation configuration
+		genConfig := &genai.GenerateContentConfig{
+			SystemInstruction: &genai.Content{
+				Parts: []*genai.Part{
+					{Text: SystemPrompt},
+				},
 			},
+			ResponseMimeType: "application/json",
 		}
-		model.ResponseMIMEType = "application/json"
 
-		resp, err := model.GenerateContent(ctx, genai.Text(req.Message))
+		resp, err := client.Models.GenerateContent(ctx, model, genai.Text(req.Message), genConfig)
 		if err != nil {
 			log.Printf("error generating content: %v", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -111,15 +119,9 @@ func main() {
 			return
 		}
 
-		part := resp.Candidates[0].Content.Parts[0]
-		textPart, ok := part.(genai.Text)
-		if !ok {
-			http.Error(w, "Unexpected response format", http.StatusInternalServerError)
-			return
-		}
-
+		text := resp.Candidates[0].Content.Parts[0].Text
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprint(w, string(textPart))
+		fmt.Fprint(w, text)
 	})
 
 	log.Printf("Server starting on port %s...", port)
