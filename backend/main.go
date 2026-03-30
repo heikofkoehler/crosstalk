@@ -49,6 +49,14 @@ func main() {
 	projectID := os.Getenv("GOOGLE_CLOUD_PROJECT")
 	location := "us-central1"
 
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/" {
+			http.NotFound(w, r)
+			return
+		}
+		fmt.Fprint(w, "Crosstalk AI Backend is running!")
+	})
+
 	http.HandleFunc("/api/chat", func(w http.ResponseWriter, r *http.Request) {
 		enableCORS(&w)
 		if r.Method == "OPTIONS" {
