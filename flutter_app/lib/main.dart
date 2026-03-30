@@ -114,7 +114,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final stt.SpeechToText _speech = stt.SpeechToText();
   final FlutterTts _flutterTts = FlutterTts();
-  final ApiService _apiService = ApiService(baseUrl: ''); 
+  final ApiService _apiService = ApiService(baseUrl: 'http://localhost:8080'); 
   
   bool _isListening = false;
   String _lastWords = '';
