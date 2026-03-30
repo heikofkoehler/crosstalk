@@ -58,13 +58,14 @@ fi
 # 3. Build and Deploy to Cloud Run
 echo "---"
 echo "🏗 Building and Deploying $SERVICE_NAME..."
-# Build and push to Artifact Registry, then deploy from image
+cd backend
 gcloud run deploy $SERVICE_NAME \
-    --source ./backend \
+    --source . \
     --region $REGION \
     --allow-unauthenticated \
     --set-env-vars="GOOGLE_CLOUD_PROJECT=$PROJECT_ID" \
     --project=$PROJECT_ID
+cd ..
 
 echo "---"
 echo "✅ Backend deployment complete!"
