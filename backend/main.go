@@ -104,7 +104,7 @@ func main() {
 					{Text: SystemPrompt},
 				},
 			},
-			ResponseMimeType: "application/json",
+			ResponseMIMEType: "application/json",
 		}
 
 		resp, err := client.Models.GenerateContent(ctx, model, genai.Text(req.Message), genConfig)
