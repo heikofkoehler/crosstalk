@@ -15,7 +15,7 @@ gcloud run deploy $SERVICE_NAME \
     --source . \
     --region $REGION \
     --allow-unauthenticated \
-    --set-env-vars="GOOGLE_CLOUD_PROJECT=$PROJECT_ID" \
+    --set-env-vars="GOOGLE_CLOUD_PROJECT=$PROJECT_ID,GEMINI_API_KEY=$GEMINI_API_KEY" \
     --project=$PROJECT_ID
 cd ..
 

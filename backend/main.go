@@ -9,6 +9,7 @@ import (
 	"os"
 
 	"cloud.google.com/go/vertexai/genai"
+	"google.golang.org/api/option"
 )
 
 const SystemPrompt = `
@@ -23,8 +24,7 @@ VISUAL DRAWING RULES:
 - You are drawing on a 100x100 canvas.
 - The "svg_draw" field should contain ONLY the inner SVG elements (paths, circles, rects, etc.). 
 - Use colors (fill, stroke) to make the drawings clear and engaging.
-- Example: <circle cx="50" cy="50" r="40" fill="yellow" /><path d="M30 40 Q50 20 70 40" stroke="black" fill="none" />
-- Always correlate the drawing with your Spanish text. If you talk about a dog, draw a simple dog. If you talk about the sun, draw a sun.
+- Always correlate the drawing with your Spanish text.
 
 SPECIAL INTERACTION:
 - If the user says "[SIMPLIFY]" or expresses confusion, immediately simplify your Spanish and make your drawing even more basic and explicit.
@@ -35,19 +35,15 @@ type ChatRequest struct {
 	Level   string `json:"level"`
 }
 
-type ChatResponse struct {
-	Text    string `json:"text"`
-	SvgDraw string `json:"svg_draw"`
-}
-
 func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "8888"
 	}
 
 	projectID := os.Getenv("GOOGLE_CLOUD_PROJECT")
 	location := "us-central1"
+	apiKey := os.Getenv("GEMINI_API_KEY")
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/" {
@@ -75,7 +71,17 @@ func main() {
 		}
 
 		ctx := context.Background()
-		client, err := genai.NewClient(ctx, projectID, location)
+		var client *genai.Client
+		var err error
+
+		if apiKey != "" {
+			log.Println("Using API Key for authentication")
+			client, err = genai.NewClient(ctx, projectID, location, option.WithAPIKey(apiKey))
+		} else {
+			log.Println("Using Default Application Credentials (IAM)")
+			client, err = genai.NewClient(ctx, projectID, location)
+		}
+
 		if err != nil {
 			log.Printf("error creating client: %v", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -83,8 +89,8 @@ func main() {
 		}
 		defer client.Close()
 
-		// Using the stable 1.5 Flash model for guaranteed availability
-		model := client.GenerativeModel("gemini-1.5-flash")
+		// Using the latest Flash Lite Preview as requested
+		model := client.GenerativeModel("gemini-2.0-flash-lite-preview-02-05")
 		model.SystemInstruction = &genai.Content{
 			Role: "user",
 			Parts: []genai.Part{
