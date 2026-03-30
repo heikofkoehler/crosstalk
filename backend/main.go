@@ -83,8 +83,8 @@ func main() {
 		}
 		defer client.Close()
 
-		// Using the latest Flash Lite Preview for improved speed and cost-efficiency
-		model := client.GenerativeModel("gemini-2.0-flash-lite-preview-02-05")
+		// Using the stable 1.5 Flash model for guaranteed availability
+		model := client.GenerativeModel("gemini-1.5-flash")
 		model.SystemInstruction = &genai.Content{
 			Role: "user",
 			Parts: []genai.Part{
