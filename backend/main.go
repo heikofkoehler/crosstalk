@@ -73,20 +73,19 @@ func main() {
 		var client *genai.Client
 		var err error
 
-		// Configuration for the new SDK
-		config := &genai.ClientConfig{
-			Project:  projectID,
-			Location: location,
-		}
-
+		// Configuration logic updated to fix "mutually exclusive" error
 		if apiKey != "" {
-			log.Println("Using API Key for authentication")
-			config.APIKey = apiKey
-			client, err = genai.NewClient(ctx, config)
+			log.Println("Using API Key for authentication (Google AI Backend)")
+			client, err = genai.NewClient(ctx, &genai.ClientConfig{
+				APIKey: apiKey,
+			})
 		} else {
 			log.Println("Using Vertex AI (IAM) for authentication")
-			config.Backend = genai.BackendVertexAI
-			client, err = genai.NewClient(ctx, config)
+			client, err = genai.NewClient(ctx, &genai.ClientConfig{
+				Project:  projectID,
+				Location: location,
+				Backend:  genai.BackendVertexAI,
+			})
 		}
 
 		if err != nil {
