@@ -1,5 +1,5 @@
 # Use the official Golang image to create a build artifact.
-FROM golang:1.23-alpine as builder
+FROM golang:1.25-alpine as builder
 
 # Create and change to the app directory.
 WORKDIR /app
