@@ -1,0 +1,56 @@
+#!/bin/bash
+
+# Configuration
+PROJECT_ID="crosstalk"
+REGION="us-central1"
+REPO_NAME="crosstalk-repo"
+SERVICE_NAME="crosstalk-backend"
+
+echo "🚀 Starting Full Deployment for $PROJECT_ID..."
+
+# 1. Enable APIs
+echo "---"
+echo "🔑 Enabling GCP Services..."
+gcloud services enable run.googleapis.com \
+                       artifactregistry.googleapis.com \
+                       aiplatform.googleapis.com \
+                       --project=$PROJECT_ID
+
+# 2. Create Artifact Registry if it doesn't exist
+echo "---"
+echo "📦 Checking Artifact Registry..."
+gcloud artifacts repositories describe $REPO_NAME --location=$REGION --project=$PROJECT_ID &>/dev/null
+if [ $? -ne 0 ]; then
+    echo "Creating repository $REPO_NAME..."
+    gcloud artifacts repositories create $REPO_NAME \
+        --repository-format=docker \
+        --location=$REGION \
+        --description="Crosstalk Go Backend" \
+        --project=$PROJECT_ID
+else
+    echo "Repository $REPO_NAME already exists."
+fi
+
+# 3. Build and Deploy to Cloud Run
+echo "---"
+echo "🏗 Building and Deploying $SERVICE_NAME..."
+# Build and push to Artifact Registry, then deploy from image
+gcloud run deploy $SERVICE_NAME \
+    --source ./backend \
+    --region $REGION \
+    --allow-unauthenticated \
+    --set-env-vars="GOOGLE_CLOUD_PROJECT=$PROJECT_ID" \
+    --project=$PROJECT_ID
+
+# 4. IAM Permissions (Zero-Cost setup)
+echo "---"
+echo "🛡 Configuring IAM Permissions for Vertex AI..."
+PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
+    --role="roles/aiplatform.user" \
+    --project=$PROJECT_ID
+
+echo "---"
+echo "✅ Backend deployment complete!"
+echo "Please find your Cloud Run Service URL above and update your Flutter main.dart."
