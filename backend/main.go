@@ -76,8 +76,8 @@ func main() {
 		defer client.Close()
 
 		model := client.GenerativeModel("gemini-1.5-flash-002")
-		model.SystemInstruction = &genai.ChildContent{
-			Role: "system",
+		model.SystemInstruction = &genai.Content{
+			Role: "user",
 			Parts: []genai.Part{
 				genai.Text(SystemPrompt),
 			},
