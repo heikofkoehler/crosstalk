@@ -114,7 +114,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final stt.SpeechToText _speech = stt.SpeechToText();
   final FlutterTts _flutterTts = FlutterTts();
-  final ApiService _apiService = ApiService(baseUrl: 'http://localhost:8888'); 
+  final ApiService _apiService = ApiService(baseUrl: 'https://crosstalk-backend-878543133248.us-central1.run.app'); 
   
   bool _isListening = false;
   String _lastWords = '';
