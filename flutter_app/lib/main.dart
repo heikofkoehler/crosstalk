@@ -6,16 +6,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
-// Note: You'll need to run 'flutterfire configure' to generate this file
-// or provide the options manually if you're not using the CLI.
-// For now, we'll assume a standard Firebase initialization.
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // If you haven't run flutterfire configure, this may need manual options
-  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await Firebase.initializeApp(); 
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  ); 
   runApp(const CrosstalkApp());
 }
 
