@@ -94,8 +94,8 @@ func main() {
 			return
 		}
 
-		model := "gemini-1.5-flash"
-		
+		model := "gemini-2.0-flash-lite"
+
 		// Setup generation configuration
 		genConfig := &genai.GenerateContentConfig{
 			SystemInstruction: &genai.Content{
