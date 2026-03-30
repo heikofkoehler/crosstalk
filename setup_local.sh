@@ -3,7 +3,7 @@
 # Configuration
 # Default to 8888 if PORT is not set
 export PORT="${PORT:-8888}"
-export GOOGLE_CLOUD_PROJECT="${GOOGLE_CLOUD_PROJECT:-crosstalk}"
+export GOOGLE_CLOUD_PROJECT="${GOOGLE_CLOUD_PROJECT:-crosstalk-project}"
 
 echo "🚀 Starting Crosstalk AI Local Environment..."
 echo "Project ID: $GOOGLE_CLOUD_PROJECT"

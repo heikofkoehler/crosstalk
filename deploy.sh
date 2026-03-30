@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-PROJECT_ID="crosstalk"
+PROJECT_ID="crosstalk-project"
 REGION="us-central1"
 REPO_NAME="crosstalk-repo"
 SERVICE_NAME="crosstalk-backend"
