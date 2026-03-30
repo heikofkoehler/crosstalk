@@ -26,11 +26,18 @@ PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format='value(projectNum
 COMPUTE_SVC_ACCOUNT="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
 
 echo "Granting roles to $COMPUTE_SVC_ACCOUNT..."
-for ROLE in "roles/cloudbuild.builds.builder" "roles/storage.admin" "roles/artifactregistry.writer" "roles/logging.logWriter"; do
-    gcloud projects add-iam-policy-binding $PROJECT_ID \
-        --member="serviceAccount:$COMPUTE_SVC_ACCOUNT" \
-        --role="$ROLE" \
-        --project=$PROJECT_ID --quiet > /dev/null
+CURRENT_POLICY=$(gcloud projects get-iam-policy $PROJECT_ID --format=json)
+
+for ROLE in "roles/cloudbuild.builds.builder" "roles/storage.admin" "roles/artifactregistry.writer" "roles/logging.logWriter" "roles/aiplatform.user"; do
+    if echo "$CURRENT_POLICY" | grep -q "\"role\": \"$ROLE\"" && echo "$CURRENT_POLICY" | grep -q "$COMPUTE_SVC_ACCOUNT"; then
+        echo "Role $ROLE already granted to $COMPUTE_SVC_ACCOUNT."
+    else
+        echo "Granting $ROLE to $COMPUTE_SVC_ACCOUNT..."
+        gcloud projects add-iam-policy-binding $PROJECT_ID \
+            --member="serviceAccount:$COMPUTE_SVC_ACCOUNT" \
+            --role="$ROLE" \
+            --project=$PROJECT_ID --quiet > /dev/null
+    fi
 done
 
 # 2. Create Artifact Registry if it doesn't exist
@@ -57,15 +64,6 @@ gcloud run deploy $SERVICE_NAME \
     --region $REGION \
     --allow-unauthenticated \
     --set-env-vars="GOOGLE_CLOUD_PROJECT=$PROJECT_ID" \
-    --project=$PROJECT_ID
-
-# 4. IAM Permissions (Zero-Cost setup)
-echo "---"
-echo "🛡 Configuring IAM Permissions for Vertex AI..."
-PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')
-gcloud projects add-iam-policy-binding $PROJECT_ID \
-    --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
-    --role="roles/aiplatform.user" \
     --project=$PROJECT_ID
 
 echo "---"
