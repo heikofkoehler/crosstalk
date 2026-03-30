@@ -14,7 +14,24 @@ echo "🔑 Enabling GCP Services..."
 gcloud services enable run.googleapis.com \
                        artifactregistry.googleapis.com \
                        aiplatform.googleapis.com \
+                       cloudbuild.googleapis.com \
                        --project=$PROJECT_ID
+
+# 1.5. Configure Build Service Account Permissions
+# Recent GCP changes require explicit permissions for the default compute service account
+# to perform builds and access storage buckets.
+echo "---"
+echo "🛡 Configuring Build Service Account permissions..."
+PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')
+COMPUTE_SVC_ACCOUNT="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
+
+echo "Granting roles to $COMPUTE_SVC_ACCOUNT..."
+for ROLE in "roles/cloudbuild.builds.builder" "roles/storage.admin" "roles/artifactregistry.writer" "roles/logging.logWriter"; do
+    gcloud projects add-iam-policy-binding $PROJECT_ID \
+        --member="serviceAccount:$COMPUTE_SVC_ACCOUNT" \
+        --role="$ROLE" \
+        --project=$PROJECT_ID --quiet > /dev/null
+done
 
 # 2. Create Artifact Registry if it doesn't exist
 echo "---"
