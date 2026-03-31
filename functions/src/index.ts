@@ -1,12 +1,12 @@
 import { genkit, z } from 'genkit';
-import { vertexAI } from '@genkit-ai/vertexai';
+import { googleAI } from '@genkit-ai/googleai';
 import { onCall } from 'firebase-functions/v2/https';
 import { initializeApp } from 'firebase-admin/app';
 
 initializeApp();
 
 const ai = genkit({
-  plugins: [vertexAI({ location: 'us-central1' })],
+  plugins: [googleAI()],
 });
 
 const systemPrompt = `
@@ -56,9 +56,9 @@ const chatFlow = ai.defineFlow(
     // Append the new message
     messages.push({ role: 'user', content: [{ text: input.message }] });
 
-    // Call Gemini via Genkit
+    // Call Gemini via Genkit with the new Google AI plugin
     const { output } = await ai.generate({
-      model: 'vertexai/gemini-1.5-flash',
+      model: 'googleai/gemini-2.0-flash-lite-preview-02-05',
       messages: messages,
       output: {
         schema: z.object({

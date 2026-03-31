@@ -2,12 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.chat = void 0;
 const genkit_1 = require("genkit");
-const vertexai_1 = require("@genkit-ai/vertexai");
+const googleai_1 = require("@genkit-ai/googleai");
 const https_1 = require("firebase-functions/v2/https");
 const app_1 = require("firebase-admin/app");
 (0, app_1.initializeApp)();
 const ai = (0, genkit_1.genkit)({
-    plugins: [(0, vertexai_1.vertexAI)({ location: 'us-central1' })],
+    plugins: [(0, googleai_1.googleAI)()],
 });
 const systemPrompt = `
 ROLE: Spanish Crosstalk Partner.
@@ -50,9 +50,9 @@ const chatFlow = ai.defineFlow({
     }
     // Append the new message
     messages.push({ role: 'user', content: [{ text: input.message }] });
-    // Call Gemini via Genkit
+    // Call Gemini via Genkit with the new Google AI plugin
     const { output } = await ai.generate({
-        model: 'vertexai/gemini-3.1-flash-lite-preview',
+        model: 'googleai/gemini-2.0-flash-lite-preview-02-05',
         messages: messages,
         output: {
             schema: genkit_1.z.object({
