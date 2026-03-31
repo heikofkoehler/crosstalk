@@ -7,17 +7,17 @@ An AI-powered Spanish language learning application built on the **Crosstalk** m
 This project follows a "Zero-Cost" serverless-first philosophy using the Google Cloud ecosystem:
 
 - **Frontend:** Flutter Web PWA hosted on **Firebase Hosting**.
-- **Backend:** Go orchestrator running on **Cloud Run**.
-- **Intelligence:** **Gemini 2.0 Flash Lite** via Vertex AI.
+- **Backend:** **Firebase Genkit** (Node.js/TypeScript) with conversational memory.
+- **Intelligence:** **Gemini 2.5 Flash Lite** via Google AI SDK.
 - **Auth:** Google Sign-In via **Firebase Authentication**.
 - **Visuals:** Real-time AI-generated SVG paths rendered on a Flutter `CustomPainter`.
 
 ## 🚀 Key Features
 
-- **Adaptive Difficulty:** Switch between Superbeginner, Beginner, and Intermediate modes to adjust vocabulary frequency.
-- **¿Qué? (Simplify) Button:** Immediate request for simpler Spanish and clearer visual cues if you're confused.
+- **Adaptive Difficulty:** Switch between Superbeginner, Beginner, and Intermediate modes.
+- **¿Qué? (Simplify) Button:** Immediate request for simpler Spanish and clearer visual cues.
+- **Conversational Memory:** The AI remembers your previous turns for a natural dialogue.
 - **Interactive Canvas:** AI "draws" what it describes to maximize comprehension without translation.
-- **PWA Ready:** Installable on mobile and desktop for a native-like experience.
 
 ---
 
@@ -25,61 +25,45 @@ This project follows a "Zero-Cost" serverless-first philosophy using the Google 
 
 ### 1. Prerequisites
 - [Flutter SDK](https://docs.flutter.dev/get-started/install)
-- [Go](https://go.dev/doc/install)
-- [Google Cloud CLI](https://cloud.google.com/sdk/docs/install)
+- [Node.js (v20+)](https://nodejs.org/)
 - [Firebase CLI](https://firebase.google.com/docs/cli)
 
-### 2. Backend Setup (Go)
-1. Authenticate with Google Cloud:
+### 2. Backend Setup (Genkit)
+1. Install dependencies:
    ```bash
-   gcloud auth application-default login
+   cd functions
+   npm install
    ```
-2. Run the local setup script (defaults to port 8888):
+2. Build and start the emulator:
    ```bash
-   ./setup_local.sh
+   npm run build
+   cd ..
+   firebase emulators:start --only functions
    ```
 
 ### 3. Frontend Setup (Flutter)
-1. Initialize Firebase for the project (run once):
+1. Install dependencies and run:
    ```bash
    cd flutter_app
-   flutterfire configure --project=crosstalk-project
-   ```
-2. Install dependencies and run:
-   ```bash
    flutter pub get
    flutter run -d chrome --web-port=8888
    ```
-   *Note: Ensure `http://localhost:8888` is an authorized JavaScript origin in your Google Cloud Console Credentials.*
 
 ---
 
 ## 📦 Production Deployment
 
-### 1. One-Time Infrastructure Setup
-Configure APIs, IAM permissions, and Artifact Registry:
+### 1. Backend & Frontend Deployment
+Deploy everything in one go from the root directory:
 ```bash
-./setup_iam.sh
-```
-
-### 2. Backend Deployment
-Deploy the Go orchestrator to Cloud Run:
-```bash
-./deploy.sh
-```
-
-### 3. Frontend Deployment
-Build and deploy the Flutter PWA to Firebase Hosting:
-```bash
-cd flutter_app
-flutter build web --release
-firebase deploy --only hosting
+./deploy.sh          # Deploys Backend (Functions)
+./deploy_frontend.sh # Deploys Frontend (Hosting)
 ```
 
 ---
 
 ## 🔒 Security & Privacy
-- **Workload Identity:** The backend uses service account roles to access Vertex AI without needing hardcoded API keys.
+- **API Key Safety:** Sensitive keys are managed via environment variables and are never checked into source control.
 - **No PII Storage:** User audio is processed in-memory via the browser's Web Speech API and is never stored on servers.
 
 ## 📄 Documentation
