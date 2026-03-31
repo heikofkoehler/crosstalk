@@ -7,6 +7,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'firebase_options.dart';
+import 'package:flutter/foundation.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -117,7 +118,11 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final stt.SpeechToText _speech = stt.SpeechToText();
   final FlutterTts _flutterTts = FlutterTts();
-  final ApiService _apiService = ApiService(baseUrl: 'https://crosstalk-backend-878543133248.us-central1.run.app'); 
+  final ApiService _apiService = ApiService(
+    baseUrl: kDebugMode 
+      ? 'http://localhost:8888' 
+      : 'https://crosstalk-backend-878543133248.us-central1.run.app',
+  ); 
   
   bool _isListening = false;
   String _lastWords = '';
