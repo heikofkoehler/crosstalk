@@ -240,7 +240,8 @@ class _ChatScreenState extends State<ChatScreen> {
           if (user != null)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Text('Hola, ${user.displayName}!', style: const TextStyle(color: Colors.grey)),
+              child: Text('Hola, ${user.displayName}!', 
+                style: const TextStyle(color: Colors.white70)),
             ),
           Expanded(
             flex: 2,
@@ -267,19 +268,22 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           Expanded(
             flex: 1,
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
+            child: Container(
+              color: const Color(0xFF1F2937),
+              child: ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: _messages.length,
+                itemBuilder: (context, index) {
                 final msg = _messages[index];
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: RichText(
                     text: TextSpan(
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
                       children: [
                         TextSpan(
                           text: '${msg['sender']}: ',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blueAccent),
                         ),
                         TextSpan(text: msg['text']),
                       ],
