@@ -293,6 +293,7 @@ class _ChatScreenState extends State<ChatScreen> {
               },
             ),
           ),
+        ),
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
             child: Row(
