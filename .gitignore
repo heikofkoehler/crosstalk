@@ -32,4 +32,4 @@ bin/
 .DS_Store
 Thumbs.db
 backend/crosstalk-backend
-flutter_app/lib/firebase_options.dart
+flutter_app/.firebase/
