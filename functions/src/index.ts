@@ -58,7 +58,7 @@ const chatFlow = ai.defineFlow(
 
     // Call Gemini via Genkit
     const { output } = await ai.generate({
-      model: 'vertexai/gemini-2.0-flash-lite',
+      model: 'vertexai/gemini-3.1-flash-lite-preview',
       messages: messages,
       output: {
         schema: z.object({
