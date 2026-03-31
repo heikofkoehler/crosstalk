@@ -16,7 +16,7 @@ flutter build web --release
 
 echo "---"
 echo "☁️ Deploying to Firebase Hosting..."
-firebase deploy --only hosting
+firebase deploy --only hosting --project crosstalk-project
 
 echo "---"
 echo "✅ Frontend deployment complete!"
