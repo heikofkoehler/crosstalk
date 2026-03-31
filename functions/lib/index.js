@@ -52,7 +52,7 @@ const chatFlow = ai.defineFlow({
     messages.push({ role: 'user', content: [{ text: input.message }] });
     // Call Gemini via Genkit with the new Google Gen AI plugin
     const { output } = await ai.generate({
-        model: 'googleai/gemini-2.0-flash-lite-preview-02-05',
+        model: 'googleai/gemini-2.5-flash-lite',
         messages: messages,
         output: {
             schema: genkit_1.z.object({
