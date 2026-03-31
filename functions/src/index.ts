@@ -1,5 +1,5 @@
 import { genkit, z } from 'genkit';
-import { googleAI } from '@genkit-ai/googleai';
+import { googleAI } from '@genkit-ai/google-genai';
 import { onCall } from 'firebase-functions/v2/https';
 import { initializeApp } from 'firebase-admin/app';
 
@@ -56,7 +56,7 @@ const chatFlow = ai.defineFlow(
     // Append the new message
     messages.push({ role: 'user', content: [{ text: input.message }] });
 
-    // Call Gemini via Genkit with the new Google AI plugin
+    // Call Gemini via Genkit with the new Google Gen AI plugin
     const { output } = await ai.generate({
       model: 'googleai/gemini-2.0-flash-lite-preview-02-05',
       messages: messages,
