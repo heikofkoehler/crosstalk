@@ -54,7 +54,7 @@ This project follows a "Zero-Cost" serverless-first philosophy using the Google 
 ## 📦 Production Deployment
 
 ### 1. Backend & Frontend Deployment
-Deploy everything in one go from the root directory:
+Deploy everything from the root directory:
 ```bash
 ./deploy.sh          # Deploys Backend (Functions)
 ./deploy_frontend.sh # Deploys Frontend (Hosting)
