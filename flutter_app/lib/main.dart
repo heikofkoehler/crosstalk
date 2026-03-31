@@ -118,6 +118,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final stt.SpeechToText _speech = stt.SpeechToText();
   final FlutterTts _flutterTts = FlutterTts();
+  final ScrollController _scrollController = ScrollController();
   final ApiService _apiService = ApiService(
     baseUrl: kDebugMode 
       ? 'http://127.0.0.1:5001/crosstalk-project/us-central1' 
@@ -182,6 +183,8 @@ class _ChatScreenState extends State<ChatScreen> {
       });
     }
 
+    _scrollToBottom();
+
     try {
       final historyToSend = List<Map<String, String>>.from(_messages);
       historyToSend.removeLast(); // Exclude the current message from history context
@@ -191,10 +194,23 @@ class _ChatScreenState extends State<ChatScreen> {
         _messages.add({'sender': 'AI (Spanish)', 'text': response['text']});
         _svgContent = _wrapInSvg(response['svg_draw']);
       });
+      _scrollToBottom();
       _flutterTts.speak(response['text']);
     } catch (e) {
       print("Error: $e");
     }
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
   String _wrapInSvg(String path) {
@@ -274,6 +290,7 @@ class _ChatScreenState extends State<ChatScreen> {
             child: Container(
               color: const Color(0xFF1F2937),
               child: ListView.builder(
+                controller: _scrollController,
                 padding: const EdgeInsets.all(16),
                 itemCount: _messages.length,
                 itemBuilder: (context, index) {
