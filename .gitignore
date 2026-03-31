@@ -31,5 +31,4 @@ bin/
 # OS
 .DS_Store
 Thumbs.db
-backend/crosstalk-backend
 flutter_app/.firebase/

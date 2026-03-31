@@ -120,8 +120,8 @@ class _ChatScreenState extends State<ChatScreen> {
   final FlutterTts _flutterTts = FlutterTts();
   final ApiService _apiService = ApiService(
     baseUrl: kDebugMode 
-      ? 'http://localhost:8888' 
-      : 'https://crosstalk-backend-878543133248.us-central1.run.app',
+      ? 'http://127.0.0.1:5001/crosstalk-project/us-central1' 
+      : 'https://us-central1-crosstalk-project.cloudfunctions.net',
   ); 
   
   bool _isListening = false;
@@ -183,7 +183,10 @@ class _ChatScreenState extends State<ChatScreen> {
     }
 
     try {
-      final response = await _apiService.sendChat(text, _currentLevel);
+      final historyToSend = List<Map<String, String>>.from(_messages);
+      historyToSend.removeLast(); // Exclude the current message from history context
+
+      final response = await _apiService.sendChat(text, _currentLevel, historyToSend);
       setState(() {
         _messages.add({'sender': 'AI (Spanish)', 'text': response['text']});
         _svgContent = _wrapInSvg(response['svg_draw']);
